@@ -142,15 +142,15 @@ class BreadCrumbs {
              * @var string $max_delimiter
              */
             'maxDelimiter' => '...',
-            'bcTplCrumbCurrent' => '<li itemscope="itemscope" class="B_currentCrumb" itemtype="http://data-vocabulary.org/Breadcrumb">[[+text]]</li>',
-            'bcTplCrumbCurrentLink' => '<a class="B_currentCrumb" itemprop="url" rel="[[+description]]" href="[[~[[+resource]]]]"><span itemprop="title">[[+text]]</span></a>',
-            'bcTplCrumbFirst' => '<li class="B_firstCrumb" itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">[[+text]]</li>',
-            'bcTplCrumbHome' => '<a class="B_homeCrumb" itemprop="url" rel="[[+description]]" href="[[~[[++site_start]]]]"><span itemprop="title">[[+text]]</span></a>',
-            'bcTplCrumbLast' => '<li class="B_lastCrumb" itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">[[+text]]</li>',
-            'bcTplCrumbMax' => '<li class="B_hideCrumb" itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">[[+text]]</li>',
-            'bcTplCrumbLink' => '<a class="B_crumb" itemprop="url" rel="[[+description]]" href="[[~[[+resource]]]]"><span itemprop="title">[[+text]]</span></a>',
-            'bcTplCrumbOuter' => '<ul class="B_crumbBox">[[+text]]</ul>',
-            'bcTplCrumb' => '<li itemscope="itemscope" class="B_crumb" itemtype="http://data-vocabulary.org/Breadcrumb">[[+text]]</li>',
+            'bcTplCrumbCurrent' => '<li itemprop="itemListElement" itemtype="http://schema.org/ListItem" class="B_currentCrumb">[[+text]]</li>',
+            'bcTplCrumbCurrentLink' => '<a class="B_currentCrumb" itemprop="item" rel="[[+description]]" href="[[~[[+resource]]]]"><span itemprop="name">[[+text]]</span></a>',
+            'bcTplCrumbFirst' => '<li class="B_firstCrumb" itemscope itemprop="itemListElement" itemtype="http://schema.org/ListItem">[[+text]] <meta itemprop="position" content="[[+idx]]" /></li>',
+            'bcTplCrumbHome' => '<a class="B_homeCrumb" itemprop="item" rel="[[+description]]" href="[[~[[++site_start]]]]"><span itemprop="name">[[+text]]</span></a>',
+            'bcTplCrumbLast' => '<li class="B_lastCrumb" itemscope itemprop="itemListElement" itemtype="http://schema.org/ListItem">[[+text]] <meta itemprop="position" content="[[+idx]]" /></li>',
+            'bcTplCrumbMax' => '<li class="B_hideCrumb" itemprop="itemListElement" itemtype="http://schema.org/ListItem">[[+text]]</li>',
+            'bcTplCrumbLink' => '<a class="B_crumb" itemprop="item" rel="[[+description]]" href="[[~[[+resource]]]]"><span itemprop="name">[[+text]]</span></a>',
+            'bcTplCrumbOuter' => '<ul itemscope itemtype="http://schema.org/Breadcrumblist" class="B_crumbBox">[[+text]]</ul>',
+            'bcTplCrumb' => '<li itemscope class="B_crumb" itemprop="itemListElement" itemtype="http://schema.org/ListItem">[[+text]] <meta itemprop="position" content="[[+idx]]" /></li>',
         ),$config);
         $this->_crumbs = array();
         $this->_tpls = array();
@@ -180,7 +180,7 @@ class BreadCrumbs {
                     : $resource->get('pagetitle');
 
                 $this->_crumbs[] = $this->getChunk('bcTplCrumbCurrentLink',array(
-                    'resource' => $resource->get('id'),
+                    'resource' => $this->modx->resource->get('id'),
                     'description' => $descriptionToUse,
                     'text' => $titleToShow,
                 ));
@@ -246,7 +246,7 @@ class BreadCrumbs {
         $wa = array(
             'id' => $resourceId,
         );
-        if (!$this->config['pathThruUnPub'] && $resourceId != $this->modx->resource->get('id')) {
+        if (!$this->config['pathThruUnPub']) {
             $wa['published'] = true;
             $wa['deleted'] = false;
         }
@@ -286,16 +286,19 @@ class BreadCrumbs {
             if ($idx == 0) {
                 $o .= $this->getChunk('bcTplCrumbFirst',array(
                     'text' => $crumb,
+                    'idx' => $idx,
                 ))."\n";
             } else if ($idx == $crumbCount) {
                 $o .= ' '.$this->config['crumbSeparator'].' ';
                 $o .= $this->getChunk('bcTplCrumbLast',array(
                     'text' => $crumb,
+                    'idx' => $idx,
                 ))."\n";
             } else {
                 $o .= ' '.$this->config['crumbSeparator'].' ';
                 $o .= $this->getChunk('bcTplCrumb',array(
                     'text' => $crumb,
+                    'idx' => $idx,
                 ))."\n";
             }
             $idx++;
